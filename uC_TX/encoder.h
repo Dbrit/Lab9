@@ -4,8 +4,28 @@
 #include "../inc/CortexM.h"
 #include "../inc/tm4c123gh6pm.h"
 #include <stdint.h>
+#include "Notes.h"
+#include "DAC.h"
+
+
 
 #define PF2       (*((volatile uint32_t *)0x40025010))
+
+
+#define PATTERN_LENGTH 4
+
+#define highFreq A2
+#define lowFreq A
+
+
+struct Pattern {
+	uint8_t patternLength;
+	uint32_t index;                  // pattern index
+	const unsigned short* voice;               // waveform selected
+	const uint16_t* notes;
+	const uint16_t* noteLength; // how long Timer1 runs until next note
+};
+
 
 
 //Initialize the encoder
@@ -18,24 +38,6 @@ void Send0(void);
 //Send encoded 1
 //Plays Start, High, then Low Frequency
 void Send1(void);
-
-
-
-// Initialize the DAC
-// Port D is the SSI1 interface
-// 16 bit data, Freescale mode
-void DAC_Init(uint16_t data);
-
-// Initialize Timer2 for sound
-void Timer2_Init(void);
-
-
-// Initialize Timer1 for sound length
-void Timer1_Init(void);
-
-// send the 16-bit code to the SSI
-void DAC_Out(uint16_t code);
-
 
 
 #endif
