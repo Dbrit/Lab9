@@ -7,6 +7,7 @@
 #include "../inc/tm4c123gh6pm.h"
 #include "ADC.h"
 #include "Notes.h"
+#include "ST7735.h"
 
 #define highFreq A2 // 1760.000 Hz
 #define lowFreq A // 440.000 Hz

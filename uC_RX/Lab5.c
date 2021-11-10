@@ -33,7 +33,11 @@
 extern uint8_t LastFreq; //0 if low, 1 if high, 2 if none
 extern uint8_t CurrFreq;
 extern uint32_t* mag;
-extern int* SampleSet;
+extern const unsigned short* SampleSet;
+
+extern uint8_t Start;
+extern uint8_t Bit;
+extern uint8_t Parity;
 
 int test_ADC(void){
 	PLL_Init(Bus80MHz);
@@ -50,12 +54,12 @@ int test_ADC(void){
 	// LCD will output the bits as they arrive
 	while (1) {
 		ST7735_SetCursor(0,1);
-		message = ADCFifo_Read();
+		//message = ADCFifo_Read();
 		ST7735_OutUDec(*message);
 	}
 } 
 
-int main(void){
+int main1(void){
 	PLL_Init(Bus80MHz);
 	ST7735_InitR(INITR_REDTAB);
 	ST7735_FillScreen(ST7735_BLACK);
@@ -63,20 +67,24 @@ int main(void){
 	Decoder_Init(1760); //max freq
 	EnableInterrupts();
 	
-	int* message;
-	
 	ST7735_SetCursor(0,0);
 	ST7735_OutString("Received Message:");
 	ST7735_SetCursor(0,1);
 	// LCD will output the bits as they arrive
 	while (1) {
 		ST7735_SetCursor(0,1);
-		ST7735_OutString("440Hz Mag:");
+		ST7735_OutString("LowHz Mag:");
 		ST7735_OutUDec(LastFreq);
+		ST7735_OutString("  ");
+		ST7735_SetCursor(0,2);
+		ST7735_OutString("HighHz Mag:");
+		ST7735_OutUDec(CurrFreq);
+		ST7735_OutString("  ");
+		
 	}
 } 
 
-int main1(void){
+int main(void){
 	PLL_Init(Bus80MHz);
 	ST7735_InitR(INITR_REDTAB);
 	ST7735_FillScreen(ST7735_BLACK);
@@ -94,6 +102,14 @@ int main1(void){
 		ST7735_SetCursor(0,1);
 		message = Decoder_Decode();
 		switch(message) {
+			case 0:
+				ST7735_OutUDec(message);
+				ST7735_OutString("           ");
+			break;
+			case 1:
+				ST7735_OutUDec(message);
+				ST7735_OutString("           ");
+			break;
 			case 2: // no freq detected
 				break;
 			case 3:
@@ -103,5 +119,17 @@ int main1(void){
 				ST7735_OutUDec(message);
 				ST7735_OutString("           ");
 		}
+		
+		ST7735_SetCursor(0,2);
+		ST7735_OutString("Last Freq:");
+		ST7735_OutUDec(LastFreq);
+		
+		ST7735_SetCursor(0,3);
+		ST7735_OutString("Curr Freq:");
+		ST7735_OutUDec(CurrFreq);
+		
+		ST7735_SetCursor(0,4);
+		ST7735_OutString("Start:");
+		ST7735_OutUDec(Start);
 	}
 } 

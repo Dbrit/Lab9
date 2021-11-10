@@ -118,11 +118,15 @@ void ADC0Seq0_Handler(void){ uint32_t data;
 	}
 }
 
-int* ADCFifo_Read()
+void ADCFifo_Read(uint32_t* SampleSet)
 {
+	ADC0_IM_R &= ~0x01; //disable int
+	
 	int* sampleSet = ADCFifo[ADCFifoReadSizeInd];
 	if(ADCFifoReadSizeInd == ADCFifoPutSizeInd)
-	{}
+	{
+		sampleSet = ADCFifo[(ADCFifoReadSizeInd+1)% FIFOSIZE];
+	}
 	else if(ADCFifoReadSizeInd < FIFOSIZE - 1)
 	{
 		ADCFifoReadSizeInd = 0;
@@ -131,7 +135,11 @@ int* ADCFifo_Read()
 	{
 		ADCFifoReadSizeInd++;
 	}
+		
+	for(int i=0; i < SAMPLES; i++){
+		SampleSet[i] = sampleSet[i];
+	}
 	
-	return sampleSet;
+	ADC0_IM_R |= 0x01; //reenable int
 }
 
